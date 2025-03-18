@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/resources">
+        <file alias="add">icon_add.png</file>
+        <file alias="close">icon_close.png</file>
+        <file alias="maximize">icon_maximize.png</file>
+        <file alias="unmaximize">icon_unmaximize.png</file>
+        <file alias="icon">icon_main.png</file>
+        <file alias="style">style.qss</file>
+    </qresource>
+</RCC>
