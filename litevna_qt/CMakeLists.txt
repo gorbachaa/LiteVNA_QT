@@ -63,3 +63,16 @@ target_include_directories( ${_pro_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../
 
 # Install destinations
 install( TARGETS ${_pro_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR} )
+
+if( WIN32 )
+    find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${QT_BIN_DIR}")
+
+    add_custom_command(TARGET ${_pro_name} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "Copy litevna_qt.exe for deploy"
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_CURRENT_BINARY_DIR}/${_pro_name}.exe
+            ${CMAKE_CURRENT_BINARY_DIR}/../../${PROJECT_NAME}_deploy/${_pro_name}.exe
+        COMMAND "${WINDEPLOYQT_EXECUTABLE}" ${CMAKE_CURRENT_BINARY_DIR}/../../${PROJECT_NAME}_deploy/${_pro_name}.exe
+    )
+
+endif()

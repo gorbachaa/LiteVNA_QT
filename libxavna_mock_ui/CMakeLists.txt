@@ -44,3 +44,12 @@ target_link_libraries( xavna_mock_ui Qt5::Core Qt5::Widgets Qt5::Gui xavna )
 
 # Declare destinations
 install( TARGETS xavna_mock_ui LIBRARY DESTINATION ${LIB_INSTALL_DIR} ARCHIVE DESTINATION ${LIB_INSTALL_DIR} )
+
+if( WIN32 )
+    add_custom_command(TARGET xavna_mock_ui POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "Copy libxavna_mock_ui for deploy"
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_CURRENT_BINARY_DIR}/libxavna_mock_ui.dll
+            ${CMAKE_CURRENT_BINARY_DIR}/../../${PROJECT_NAME}_deploy/libxavna_mock_ui.dll
+    )
+endif()

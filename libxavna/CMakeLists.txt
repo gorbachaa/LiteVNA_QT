@@ -19,3 +19,12 @@ target_link_libraries( xavna ${xa_LIBRARIES} )
 
 # Declare destinations
 install( TARGETS xavna LIBRARY DESTINATION ${LIB_INSTALL_DIR} ARCHIVE DESTINATION ${LIB_INSTALL_DIR} )
+
+if( WIN32 )
+    add_custom_command(TARGET xavna POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "Copy libxavna.dll for deploy"
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_CURRENT_BINARY_DIR}/libxavna.dll
+            ${CMAKE_CURRENT_BINARY_DIR}/../../${PROJECT_NAME}_deploy/libxavna.dll
+    )
+endif()

@@ -81,11 +81,11 @@ if( Qt5Charts_FOUND )
   message( STATUS "  qt5 charts dir: ${Qt5Charts_DIR}" )
 endif()
 
-add_subdirectory( CMakeTools )
-
 # ==============================================================================
 # xaVNA subprojects
 # ==============================================================================
+add_subdirectory( CMakeTools )
+
 add_subdirectory( libxavna )
 add_subdirectory( libxavna_mock_ui )
 add_subdirectory( litevna_qt )
