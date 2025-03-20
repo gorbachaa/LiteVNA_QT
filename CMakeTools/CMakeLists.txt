@@ -34,5 +34,19 @@ function( glob_ui VARNAME ui_path )
 endfunction( glob_ui )
 #-------------------------------------------------------------------------------
 
-
+# Given a variable containing a file list,
+# this macro will remove all the files wich
+# basename match the specified pattern
+#
+# Usage:
+#    file(GLOB_RECURSE config_files RELATIVE "${PROJECT_SOURCE_DIR}" *.in)
+#    reject_file_pattern("^a" config_files)
+macro(reject_file_pattern pattern input_list)
+  foreach(src_file ${${input_list}})
+    get_filename_component(base_name ${src_file} NAME)
+    if(${base_name} MATCHES ${pattern})
+      list(REMOVE_ITEM ${input_list} "${src_file}")
+    endif()
+  endforeach()
+endmacro()
 

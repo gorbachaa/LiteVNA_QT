@@ -12,8 +12,7 @@ if( WIN32 )
 endif()
 
 # Project
-set( PROJECT_NAME LiteVNA_QT)
-project( ${PROJECT_NAME} C CXX )
+project( LiteVNA_QT C CXX )
 
 set( xaVNA_VERSION_MAJOR 0 )
 set( xaVNA_VERSION_MINOR 1 )

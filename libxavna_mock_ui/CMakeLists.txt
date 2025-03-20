@@ -50,6 +50,13 @@ if( WIN32 )
         COMMAND ${CMAKE_COMMAND} -E echo "Copy libxavna_mock_ui for deploy"
         COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_CURRENT_BINARY_DIR}/libxavna_mock_ui.dll
-            ${CMAKE_CURRENT_BINARY_DIR}/../../${PROJECT_NAME}_deploy/libxavna_mock_ui.dll
+            ${CMAKE_CURRENT_BINARY_DIR}/../../LiteVNA_QT_deploy_win/libxavna_mock_ui.dll
+    )
+else()
+    add_custom_command(TARGET xavna_mock_ui POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "Copy libxavna_mock_ui for deploy"
+        COMMAND ${CMAKE_COMMAND} -E copy
+            ${CMAKE_CURRENT_BINARY_DIR}/libxavna_mock_ui.so
+            ${CMAKE_CURRENT_BINARY_DIR}/../../LiteVNA_QT_deploy_lin/libxavna_mock_ui.so
     )
 endif()
