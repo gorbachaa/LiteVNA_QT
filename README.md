@@ -5,5 +5,5 @@
 <pre>
     Screenshot of the utility
     <p align="center">
-    <img src="./readme/screenshot.jpg" width="100%"></p>
+    <img src="./readme/screenshot.jpg" width="95%"></p>
 </pre>
