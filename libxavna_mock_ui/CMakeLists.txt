@@ -38,7 +38,7 @@ list( APPEND CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_CURRENT_SOURCE_DIR}/${UI_DIR} )
 
 add_library( xavna_mock_ui SHARED ${PROJECT_SOURCES} ${PROJECT_UI} )
 
-set_target_properties( xavna_mock_ui PROPERTIES VERSION ${xaVNA_VERSION_STRING} SOVERSION ${xaVNA_VERSION_MAJOR} )
+set_target_properties( xavna_mock_ui PROPERTIES VERSION ${APP_VERSION_STRING} SOVERSION ${xaVNA_VERSION_MAJOR} )
 
 target_link_libraries( xavna_mock_ui Qt5::Core Qt5::Widgets Qt5::Gui xavna )
 
@@ -46,17 +46,13 @@ target_link_libraries( xavna_mock_ui Qt5::Core Qt5::Widgets Qt5::Gui xavna )
 install( TARGETS xavna_mock_ui LIBRARY DESTINATION ${LIB_INSTALL_DIR} ARCHIVE DESTINATION ${LIB_INSTALL_DIR} )
 
 if( WIN32 )
+    set( win_deploy_dir ${CMAKE_CURRENT_BINARY_DIR}/../../${APP_NAME}_${APP_VERSION_STRING}_deploy_win )
     add_custom_command(TARGET xavna_mock_ui POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Copy libxavna_mock_ui for deploy"
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_CURRENT_BINARY_DIR}/libxavna_mock_ui.dll
-            ${CMAKE_CURRENT_BINARY_DIR}/../../LiteVNA_QT_deploy_win/libxavna_mock_ui.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/libxavna_mock_ui.dll ${win_deploy_dir}/libxavna_mock_ui.dll
     )
 else()
+    set( linux_deploy_dir ${CMAKE_CURRENT_BINARY_DIR}/../../${APP_NAME}_${APP_VERSION_STRING}_deploy_linux )
     add_custom_command(TARGET xavna_mock_ui POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Copy libxavna_mock_ui for deploy"
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_CURRENT_BINARY_DIR}/libxavna_mock_ui.so
-            ${CMAKE_CURRENT_BINARY_DIR}/../../LiteVNA_QT_deploy_lin/libxavna_mock_ui.so
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/libxavna_mock_ui.so ${linux_deploy_dir}/libxavna_mock_ui.so
     )
 endif()

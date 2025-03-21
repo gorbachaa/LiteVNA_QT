@@ -17,7 +17,7 @@ endif()
 
 add_library( xavna SHARED ${PROJECT_SOURCES} )
 
-set_target_properties( xavna PROPERTIES VERSION ${xaVNA_VERSION_STRING} SOVERSION ${xaVNA_VERSION_MAJOR} )
+set_target_properties( xavna PROPERTIES VERSION ${APP_VERSION_STRING} SOVERSION ${xaVNA_VERSION_MAJOR} )
 
 target_link_libraries( xavna ${xa_LIBRARIES} )
 
@@ -25,17 +25,13 @@ target_link_libraries( xavna ${xa_LIBRARIES} )
 install( TARGETS xavna LIBRARY DESTINATION ${LIB_INSTALL_DIR} ARCHIVE DESTINATION ${LIB_INSTALL_DIR} )
 
 if( WIN32 )
+    set( win_deploy_dir ${CMAKE_CURRENT_BINARY_DIR}/../../${APP_NAME}_${APP_VERSION_STRING}_deploy_win )
     add_custom_command(TARGET xavna POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Copy libxavna for deploy"
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_CURRENT_BINARY_DIR}/libxavna.dll
-            ${CMAKE_CURRENT_BINARY_DIR}/../../LiteVNA_QT_deploy_win/libxavna.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/libxavna.dll ${win_deploy_dir}/libxavna.dll
     )
 else()
+    set( linux_deploy_dir ${CMAKE_CURRENT_BINARY_DIR}/../../${APP_NAME}_${APP_VERSION_STRING}_deploy_linux )
     add_custom_command(TARGET xavna POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Copy libxavna for deploy"
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_CURRENT_BINARY_DIR}/libxavna.so
-            ${CMAKE_CURRENT_BINARY_DIR}/../../LiteVNA_QT_deploy_lin/libxavna.so
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_BINARY_DIR}/libxavna.so ${linux_deploy_dir}/libxavna.so
     )
 endif()

@@ -12,11 +12,13 @@ if( WIN32 )
 endif()
 
 # Project
-project( LiteVNA_QT C CXX )
+set( APP_NAME LiteVNA_QT )
+project( ${APP_NAME} C CXX )
 
 set( xaVNA_VERSION_MAJOR 0 )
-set( xaVNA_VERSION_MINOR 1 )
-set( xaVNA_VERSION_STRING ${xaVNA_VERSION_MAJOR}.${xaVNA_VERSION_MINOR} )
+set( xaVNA_VERSION_MINOR 3 )
+set( APP_VERSION_STRING 1.0.${xaVNA_VERSION_MAJOR}.${xaVNA_VERSION_MINOR} )
+
 
 # Set C++11 as standard for the whole project
 set( CMAKE_CXX_STANDARD 11 )
@@ -35,7 +37,7 @@ if( NOT BIN_INSTALL_DIR )
 endif()
 
 # Set version
-add_definitions( -DVERSION=\"${xaVNA_VERSION_STRING}\" )
+add_definitions( -DVERSION=\"${APP_VERSION_STRING}\" )
 add_definitions( -DEIGEN_DONT_VECTORIZE -DEIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT )
 
 # CMake policies

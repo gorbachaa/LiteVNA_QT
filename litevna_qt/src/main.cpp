@@ -26,7 +26,7 @@ int main( int argc, char *argv[] )
     MainWindow w;
     QIcon appIcon( ":/resources/icon" );
     w.setWindowIcon( appIcon );
-    w.setWindowTitle( "LiteVNA QT v1.0.0.2 by gorbachaa" );
+    w.setWindowTitle( "LiteVNA QT v" VERSION " by gorbachaa" );
     w.show();
 
     return app.exec();
