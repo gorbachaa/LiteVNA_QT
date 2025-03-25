@@ -43,8 +43,8 @@ void FirmwareUpdater::open(const char* dev)
 {
     ttyFD = checkError(xavna_open_serial(dev));
     char buf[64] = {};
-    write(ttyFD, buf, sizeof(buf));
-
+    ssize_t t = write(ttyFD, buf, sizeof(buf));
+    (void)t;
     xavna_drainfd(ttyFD);
     usleep(10000);
     xavna_drainfd(ttyFD);

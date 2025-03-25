@@ -10,18 +10,12 @@ set( CMAKE_AUTORCC ON )
 
 cmake_minimum_required( VERSION 3.5 )
 
-
-
-
-
-set( _pro_name litevna_qt )
-project( ${_pro_name} VERSION 0.1 LANGUAGES CXX )
+project( ${APP_NAME} LANGUAGES CXX )
 
 set( INC_DIR    inc )
 set( SRC_DIR    src )
 set( UI_DIR     ui )
 set( RESRC_DIR  resources )
-
 
 
 # Source files:
@@ -55,24 +49,86 @@ list( APPEND CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_CURRENT_SOURCE_DIR}/${RESRC_DIR}
 list( APPEND CMAKE_AUTOUIC_SEARCH_PATHS ${CMAKE_CURRENT_SOURCE_DIR}/${UI_DIR} )
 
 
-add_executable( ${_pro_name} ${PROJECT_SOURCES} ${PROJECT_RESOURCES} ${PROJECT_UI} )
+add_executable( ${APP_NAME} ${PROJECT_SOURCES} ${PROJECT_RESOURCES} ${PROJECT_UI} )
 
-target_link_libraries( ${_pro_name} Qt5::Charts ${FFTW3_LIBRARIES} xavna xavna_mock_ui )
+target_link_libraries( ${APP_NAME} Qt5::Charts ${FFTW3_LIBRARIES} xavna xavna_mock_ui )
 
-target_include_directories( ${_pro_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../libxavna/inc )
+target_include_directories( ${APP_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../libxavna/inc )
 
 # Install destinations
-install( TARGETS ${_pro_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR} )
+install( TARGETS ${APP_NAME} RUNTIME DESTINATION ${BIN_INSTALL_DIR} )
+
+# copy app to deploy dir
+add_custom_command( TARGET ${APP_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_BINARY_DIR}/${APP_NAME}${PLATFORM_APP_TAIL}
+    ${DEPLOY_DIR}/${APP_NAME}${PLATFORM_APP_TAIL}
+)
 
 if( WIN32 )
-    find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${QT_BIN_DIR}")
 
-    add_custom_command(TARGET ${_pro_name} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Copy litevna_qt.exe for deploy"
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_CURRENT_BINARY_DIR}/${_pro_name}.exe
-            ${CMAKE_CURRENT_BINARY_DIR}/../../${PROJECT_NAME}_deploy/${_pro_name}.exe
-        COMMAND "${WINDEPLOYQT_EXECUTABLE}" ${CMAKE_CURRENT_BINARY_DIR}/../../${PROJECT_NAME}_deploy/${_pro_name}.exe
+    find_file( ZLIB1           zlib1.dll                HINTS "${QT_BIN_DIR}" )
+    find_file( LIBMD4C         libmd4c.dll              HINTS "${QT_BIN_DIR}" )
+    find_file( LIBPCRE2_8      libpcre2-8-0.dll         HINTS "${QT_BIN_DIR}" )
+    find_file( LIBPCRE2_16     libpcre2-16-0.dll        HINTS "${QT_BIN_DIR}" )
+    find_file( LIBICONV_2      libiconv-2.dll           HINTS "${QT_BIN_DIR}" )
+    find_file( LIBFFTW3        libfftw3-3.dll           HINTS "${QT_BIN_DIR}" )
+    find_file( LIBZSTD         libzstd.dll              HINTS "${QT_BIN_DIR}" )
+    find_file( LIBDOUBLE       libdouble-conversion.dll HINTS "${QT_BIN_DIR}" )
+    find_file( LIBPNG16        libpng16-16.dll          HINTS "${QT_BIN_DIR}" )
+    find_file( LIBFREETYPE     libfreetype-6.dll        HINTS "${QT_BIN_DIR}" )
+    find_file( LIBBROTLICOMMON libbrotlicommon.dll      HINTS "${QT_BIN_DIR}" )
+    find_file( LIBBROTLIDEC    libbrotlidec.dll         HINTS "${QT_BIN_DIR}" )
+    find_file( LIBBZ2          libbz2-1.dll             HINTS "${QT_BIN_DIR}" )
+    find_file( LIBGCC          libgcc_s_seh-1.dll       HINTS "${QT_BIN_DIR}" )
+    find_file( LIBSTDC         libstdc++-6.dll          HINTS "${QT_BIN_DIR}" )
+    find_file( LIBGLIB         libglib-2.0-0.dll        HINTS "${QT_BIN_DIR}" )
+    find_file( LIBGRAPHITE     libgraphite2.dll         HINTS "${QT_BIN_DIR}" )
+    find_file( LIBHARFBUZZ     libharfbuzz-0.dll        HINTS "${QT_BIN_DIR}" )
+    find_file( LIBICUDT        libicudt74.dll           HINTS "${QT_BIN_DIR}" )
+    find_file( LIBICUIN        libicuin74.dll           HINTS "${QT_BIN_DIR}" )
+    find_file( LIBICIUC        libicuuc74.dll           HINTS "${QT_BIN_DIR}" )
+    find_file( LIBINTL         libintl-8.dll            HINTS "${QT_BIN_DIR}" )
+
+    add_custom_command( TARGET ${APP_NAME} POST_BUILD
+        # copy dll's
+        COMMAND ${CMAKE_COMMAND} -E copy ${ZLIB1}           ${DEPLOY_DIR}/zlib1.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBMD4C}         ${DEPLOY_DIR}/libmd4c.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBPCRE2_8}      ${DEPLOY_DIR}/libpcre2-8-0.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBPCRE2_16}     ${DEPLOY_DIR}/libpcre2-16-0.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBICONV_2}      ${DEPLOY_DIR}/libiconv-2.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBFFTW3}        ${DEPLOY_DIR}/libfftw3-3.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBZSTD}         ${DEPLOY_DIR}/libzstd.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBDOUBLE}       ${DEPLOY_DIR}/libdouble-conversion.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBPNG16}        ${DEPLOY_DIR}/libpng16-16.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBFREETYPE}     ${DEPLOY_DIR}/libfreetype-6.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBBROTLICOMMON} ${DEPLOY_DIR}/libbrotlicommon.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBBROTLIDEC}    ${DEPLOY_DIR}/libbrotlidec.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBBZ2}          ${DEPLOY_DIR}/libbz2-1.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBGCC}          ${DEPLOY_DIR}/libgcc_s_seh-1.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBSTDC}         ${DEPLOY_DIR}/libstdc++-6.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBGLIB}         ${DEPLOY_DIR}/libglib-2.0-0.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBGRAPHITE}     ${DEPLOY_DIR}/libgraphite2.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBHARFBUZZ}     ${DEPLOY_DIR}/libharfbuzz-0.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBICUDT}        ${DEPLOY_DIR}/libicudt74.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBICUIN}        ${DEPLOY_DIR}/libicuin74.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBICIUC}        ${DEPLOY_DIR}/libicuuc74.dll
+        COMMAND ${CMAKE_COMMAND} -E copy ${LIBINTL}         ${DEPLOY_DIR}/libintl-8.dll
     )
 
+
+    find_program( WINDEPLOYQT windeployqt HINTS "${QT_BIN_DIR}" )
+    add_custom_command( TARGET ${APP_NAME} POST_BUILD
+        # win deploy
+        COMMAND "${WINDEPLOYQT}" ${DEPLOY_DIR}/${APP_NAME}${PLATFORM_APP_TAIL}
+    )    
+
+else()
+
 endif()
+
+# create the archive deploy folder
+add_custom_command( TARGET ${APP_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E tar cvf ${DEPLOY_DIR}.${ARCHIVE_TYPE} --format=zip .
+    WORKING_DIRECTORY ${DEPLOY_DIR}
+)

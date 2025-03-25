@@ -1,5 +1,7 @@
 # Minimum CMake required
 cmake_minimum_required( VERSION 3.5 )
+# Set C++11 as standard for the whole project
+set( CMAKE_CXX_STANDARD 11 )
 
 if( WIN32 )
   if( ${CMAKE_VERSION} VERSION_LESS "3.8" )
@@ -12,15 +14,28 @@ if( WIN32 )
 endif()
 
 # Project
-set( PROJECT_NAME LiteVNA_QT)
-project( ${PROJECT_NAME} C CXX )
+set( REPO_NAME LiteVNA_QT )
+set( APP_NAME litevna_qt )
 
 set( xaVNA_VERSION_MAJOR 0 )
-set( xaVNA_VERSION_MINOR 1 )
-set( xaVNA_VERSION_STRING ${xaVNA_VERSION_MAJOR}.${xaVNA_VERSION_MINOR} )
+set( xaVNA_VERSION_MINOR 3 )
+set( APP_VERSION_STRING 1.0.${xaVNA_VERSION_MAJOR}.${xaVNA_VERSION_MINOR} )
 
-# Set C++11 as standard for the whole project
-set( CMAKE_CXX_STANDARD 11 )
+if( WIN32 )
+  set( PLATFORM_NAME windows )
+  set( PLATFORM_APP_TAIL .exe )
+  set( PLATFORM_LIB_TAIL .dll )
+  set( ARCHIVE_TYPE zip )
+elseif( UNIX )
+  set( PLATFORM_NAME linux )
+  set( PLATFORM_APP_TAIL  )
+  set( PLATFORM_LIB_TAIL .so )
+  set( ARCHIVE_TYPE tgz )
+endif()
+
+set( DEPLOY_DIR ${CMAKE_CURRENT_BINARY_DIR}/${REPO_NAME}_${APP_VERSION_STRING}_deploy_${PLATFORM_NAME} )
+
+project( ${REPO_NAME} C CXX )
 
 if( UNIX )
   set( CMAKE_CXX_FLAGS "-O2 ${CMAKE_CXX_FLAGS}" )
@@ -36,7 +51,7 @@ if( NOT BIN_INSTALL_DIR )
 endif()
 
 # Set version
-add_definitions( -DVERSION=\"${xaVNA_VERSION_STRING}\" )
+add_definitions( -DVERSION=\"${APP_VERSION_STRING}\" )
 add_definitions( -DEIGEN_DONT_VECTORIZE -DEIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT )
 
 # CMake policies

@@ -205,7 +205,8 @@ public:
 
 			char buf[64];
             memset( buf, 0, sizeof( buf ) );
-            write( ttyFD, buf, sizeof( buf ) );
+            ssize_t t = write( ttyFD, buf, sizeof( buf ) );
+            (void)t;
             usleep( 10000 );
 
 			int version = autosweep_read_version();
@@ -234,7 +235,7 @@ public:
 		} else {
 			tr = true;
             fprintf( stderr, "detected T/R vna\n" );
-            fprintf( stderr, "%lld %lld\n", result[0], result[1] );
+            fprintf( stderr, "%ld %ld\n", result[0], result[1] );
 		}
 		
         if( !tr ) set_if_freq( 700 );
