@@ -75,47 +75,112 @@ endmacro()
 #-------------------------------------------------------------------------------
 
 #-------------------------------------------------------------------------------
-# Deploy app
+# Deploy app and lib
 #
 # Usage:
-#      app_deploy( my_app 1.0.0.1 )
-function( app_deploy _name _version )
-  if( WIN32 )
-    set( platform_name windows )
-    set( platform_app_tail .exe )
-    set( archive_type zip )
-  elseif( UNIX )
-    set( platform_name linux )
-    set( platform_app_tail  )
-    set( archive_type tgz )
-  endif()
+#      app_deploy( my_app_name 1.0.0.1 )
+#
+#      lib_deploy( my_app_name 1.0.0.1
+#                     Qt6Core.dll
+#                     Qt6Gui.dll
+#                 )
 
-  set( deploy_dir ${CMAKE_CURRENT_BINARY_DIR}/${_name}_${_version}_deploy_${platform_name} )
+#-------------------------------------------------------------------------------
+# global variables
+set( deploy_dir )
+set( platform_name )
+set( platform_app_tail )
+set( archive_type )
 
-  # copy app to deploy dir
-  add_custom_command( TARGET ${_name} POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy
-      ${CMAKE_CURRENT_BINARY_DIR}/${_name}${platform_app_tail}
-      ${deploy_dir}/${_name}${platform_app_tail}
-  )
+#-------------------------------------------------------------------------------
+macro( pre_deploy i_name i_version )
+    if( WIN32 )
+        set( platform_name windows )
+        set( platform_app_tail .exe )
+        set( archive_type zip )
+    elseif( UNIX )
+        set( platform_name linux )
+        set( platform_app_tail  )
+        set( archive_type tgz )
+    endif()
+
+    # set deploy dir
+    set( deploy_dir ${CMAKE_CURRENT_BINARY_DIR}/${i_name}_${i_version}_deploy_${platform_name} )
+
+    message( "platform: \"${platform_name}\"" )
+    message( "archive: \"${archive_type}\"" )
+    message( "deploy dir: \"${deploy_dir}\"" )
+endmacro()
+
+
+#-------------------------------------------------------------------------------
+function( app_deploy in_name in_version )
+    message( "app deploy" )
+    pre_deploy( ${in_name} ${in_version} )
+
+    # copy app to deploy dir
+    add_custom_command( TARGET ${in_name} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_CURRENT_BINARY_DIR}/${in_name}${platform_app_tail}
+        ${deploy_dir}/${in_name}${platform_app_tail}
+    )
 
 
   if( WIN32 )
       # windows deploy
       find_program( delpoy_tool windeployqt HINTS "${QT_BIN_DIR}" )
-      add_custom_command( TARGET ${_name} POST_BUILD
-          COMMAND "${delpoy_tool}" ${deploy_dir}/${_name}${platform_app_tail}
+      add_custom_command( TARGET ${in_name} POST_BUILD
+          COMMAND "${delpoy_tool}" ${deploy_dir}/${in_name}${platform_app_tail}
       )
-
   elseif( UNIX )
-
+      FILE( WRITE ${deploy_dir}/run.sh
+           "###############################################\n"
+           "# Start app in local folder\n"
+           "export LD_LIBRARY_PATH=$PWD:$LD_LIBRARY_PATH\n"
+           "./${in_name}\n"
+      )
   endif()
 
+  FILE( WRITE ${deploy_dir}/readme.md
+       "###############################################\n"
+       "# app ${in_name}_${in_version}\n"
+       "windows:\n"
+       "- for start run ${in_name}.exe\n"
+       "linux(ubuntu):\n"
+       "- for start run bush run.sh\n"
+  )
+
   # create the archive deploy folder
-  add_custom_command( TARGET ${_name} POST_BUILD
+  add_custom_command( TARGET ${in_name} POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E tar cvf ${deploy_dir}.${archive_type} --format=zip .
       WORKING_DIRECTORY ${deploy_dir}
   )
 endfunction( app_deploy )
+
+#-------------------------------------------------------------------------------
+function( lib_deploy in_name in_version )
+  message( "lib deploy" )
+  pre_deploy( ${in_name} ${in_version} )
+
+  message( "lib list:${ARGN}" )
+
+  # Alternatively, you can access the lists directly without parsing
+  foreach( item IN LISTS ARGN )
+      message("Item in List:${item}")
+      # find lib
+      if( UNIX )
+          set( FIND_LIB /lib/x86_64-linux-gnu/${item} )
+      elseif( WIN32 )
+          find_file( FIND_LIB item HINTS "${QT_BIN_DIR}" )
+      endif()
+      message("find lib:${FIND_LIB}")
+      # copy libs
+      add_custom_command( TARGET ${in_name} POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy ${FIND_LIB} ${deploy_dir}/${item}
+      )
+  endforeach()
+
+endfunction( lib_deploy )
+
 #-------------------------------------------------------------------------------
 
